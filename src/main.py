@@ -1,7 +1,6 @@
 import orangeClockFunctions.displayBlockMoscowFees as orangeClock
 import orangeClockFunctions.displaySetupDialog as setupDialog
-from orangeClockFunctions.logging import log_exception
-from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server
+from phew import access_point, connect_to_wifi, is_connected_to_wifi, dns, server, logging
 from phew.template import render_template
 import json
 import machine
@@ -60,7 +59,7 @@ def setup_mode():
 
 def application_mode():
     print("Entering application mode.")
-    orangeClock.setSecrets(wifi_credentials["ssid"], wifi_credentials["password"])
+    orangeClock.setSecrets(wifi_credentials["ssid"], wifi_credentials["password"], wifi_credentials["Bitaxe_IP"])
     orangeClock.setSelectDisplay(wifi_credentials["line1"], wifi_credentials["npub"], wifi_credentials["line2"])
     orangeClock.main()
 
@@ -102,7 +101,9 @@ try:
 except Exception as err:
     # Either no wifi configuration file found, or something went wrong, 
     # so log exception, then go into setup mode.
-    log_exception(err)
+    tmp = uio.StringIO()
+    usys.print_exception(err, tmp)
+    logging.exception(f"> {tmp.getvalue().replace('\n','\\n')}")
     setup_mode()
     
  
